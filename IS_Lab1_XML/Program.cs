@@ -10,7 +10,7 @@
             //XMLReadWithDOMApproach.Read(xmlpath);
 
             Console.WriteLine("XML loaded with XPath");
-            XMLReadWithDOMApproach.Read(xmlpath);
+            XMLReadWithXLSTDOM.Read(xmlpath);
 
             Console.ReadLine();
         }

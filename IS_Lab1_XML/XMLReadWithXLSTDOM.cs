@@ -59,37 +59,72 @@ namespace IS_Lab1_XML
             //Console.WriteLine("Liczba preparatów występujących pod więcej niż jedną postacią: {0}", wielopostaciowe);
 
             // --- ZADANIE 1.4.2 (Część 2) - TOP 5 Państw ---
-            XPathExpression allDrugsQuery = navigator.Compile("//x:wytworcy");
-            allDrugsQuery.SetContext(manager);
-            XPathNodeIterator wytworcaIterator = navigator.Select(allDrugsQuery);
+            //XPathExpression allDrugsQuery = navigator.Compile("//x:substancjaCzynna");
+            //allDrugsQuery.SetContext(manager);
+            //XPathNodeIterator wytworcaIterator = navigator.Select(allDrugsQuery);
 
-            Dictionary<string, HashSet<string>> panstwaWytworcy = new Dictionary<string, HashSet<string>>();
+            //Dictionary<string, HashSet<string>> panstwaWytworcy = new Dictionary<string, HashSet<string>>();
 
-            while (wytworcaIterator.MoveNext())
+            //while (wytworcaIterator.MoveNext())
+            //{
+            //    string kraj = wytworcaIterator.Current.GetAttribute("krajWytworcyImportera", "");
+            //    string nazwa = wytworcaIterator.Current.GetAttribute("nazwaWytworcyImportera", "");
+            //    if (!string.IsNullOrEmpty(kraj) && !string.IsNullOrEmpty(nazwa))
+            //    {
+            //        if (!panstwaWytworcy.ContainsKey(kraj))
+            //        {
+            //            panstwaWytworcy[kraj] = new HashSet<string>();
+            //        }
+            //        panstwaWytworcy[kraj].Add(nazwa);
+            //    }
+            //}
+
+            //var top5Panstw = panstwaWytworcy.OrderByDescending(p => p.Value.Count).Take(5);
+
+            //Console.WriteLine("\n--- TOP 5 PAŃSTW ---");
+            //foreach (var panstwo in top5Panstw)
+            //{
+            //    Console.WriteLine($"Państwo: {panstwo.Key} (Liczba wytwórców: {panstwo.Value.Count})");
+            //    foreach (var wytworca in panstwo.Value.Take(3))
+            //    {
+            //        Console.WriteLine($" - {wytworca}");
+            //    }
+            //}
+
+            // --- ZADANIE 1.5 (Zaawansowane) - Jedna vs Wiele substancji czynnych ---
+            XPathExpression productsQuery = navigator.Compile("//*[local-name()='produktLeczniczy']");
+            productsQuery.SetContext(manager);
+            XPathNodeIterator productsIterator = navigator.Select(productsQuery);
+
+            int jednoSubstancjowe = 0;
+            int wieloSubstancjowe = 0;
+            int bezSubstancji = 0;
+
+            while (productsIterator.MoveNext())
             {
-                string kraj = wytworcaIterator.Current.GetAttribute("krajWytworcyImportera", "");
-                string nazwa = wytworcaIterator.Current.GetAttribute("nazwaWytworcyImportera", "");
-                if (!string.IsNullOrEmpty(kraj) && !string.IsNullOrEmpty(nazwa))
+                XPathNavigator product = productsIterator.Current.Clone();
+                XPathExpression substancesQuery = product.Compile(".//*[local-name()='substancjaCzynna']");
+
+                int liczbaSubstancji = product.Select(substancesQuery).Count;
+                if (liczbaSubstancji == 1)
                 {
-                    if (!panstwaWytworcy.ContainsKey(kraj))
-                    {
-                        panstwaWytworcy[kraj] = new HashSet<string>();
-                    }
-                    panstwaWytworcy[kraj].Add(nazwa);
+                    jednoSubstancjowe++;
+                }
+                else if (liczbaSubstancji > 1)
+                {
+                    wieloSubstancjowe++;
+                }
+                else
+                {
+                    bezSubstancji++;
                 }
             }
 
-            var top5Panstw = panstwaWytworcy.OrderByDescending(p => p.Value.Count).Take(5);
+            Console.WriteLine("\n--- Substancje czynne ---");
+            Console.WriteLine($"Produkty z jedną substancją czynną: {jednoSubstancjowe}");
+            Console.WriteLine($"Produkty z kilkoma substancjami czynnymi (leki złożone): {wieloSubstancjowe}");
+            Console.WriteLine($"Produkty bez określonej substancji czynnej w tagach: {bezSubstancji}");
 
-            Console.WriteLine("\n--- TOP 5 PAŃSTW ---");
-            foreach (var panstwo in top5Panstw)
-            {
-                Console.WriteLine($"Państwo: {panstwo.Key} (Liczba wytwórców: {panstwo.Value.Count})");
-                foreach (var wytworca in panstwo.Value.Take(3))
-                {
-                    Console.WriteLine($" - {wytworca}");
-                }
-            }
         }
     }
 }
