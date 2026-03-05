@@ -5,7 +5,8 @@ namespace IS_Lab1_XML
 {
     public class XMLReadWithDOMApproach
     {
-        public static void Read(string xmlpath)
+
+        public static Dictionary<string, HashSet<string>> Read(string xmlpath)
         {
             // --- ZADANIE 1.2.3 ---
             XmlDocument doc = new XmlDocument();
@@ -15,48 +16,47 @@ namespace IS_Lab1_XML
             string sc;
             int count = 0;
 
-            //var drugs = doc.GetElementsByTagName("produktLeczniczy");
-            //Console.WriteLine($"Wczytano produktów: {drugs.Count}");
-            //foreach (XmlNode d in drugs)
-            //{
-            //    postac = d.Attributes.GetNamedItem("nazwaPostaciFarmaceutycznej").Value;
-            //    sc = d.Attributes.GetNamedItem("nazwaPowszechnieStosowana").Value;
+            var drugs = doc.GetElementsByTagName("produktLeczniczy");
+            Console.WriteLine($"Wczytano produktów: {drugs.Count}");
+            foreach (XmlNode d in drugs)
+            {
+                postac = d.Attributes.GetNamedItem("nazwaPostaciFarmaceutycznej").Value;
+                sc = d.Attributes.GetNamedItem("nazwaPowszechnieStosowana").Value;
 
-            //    if (postac == "Krem" && sc == "Mometasoni furoas")
-            //    {
-            //        count++;
-            //    }
-            //}
-            //Console.WriteLine("Liczba produktów leczniczych w postaci kremu, których jedyną substancją czynną jest Mometasoni furoas: {0}", count);
+                if (postac == "Krem" && sc == "Mometasoni furoas")
+                {
+                    count++;
+                }
+            }
+            Console.WriteLine("Liczba produktów leczniczych w postaci kremu, których jedyną substancją czynną jest Mometasoni furoas: {0}", count);
 
             // --- ZADANIE 1.2.4 ---
-            //Dictionary<string, HashSet<string>> preparaty = new Dictionary<string, HashSet<string>>();
+            Dictionary<string, HashSet<string>> preparaty = new Dictionary<string, HashSet<string>>();
 
-            //foreach (XmlNode d in drugs)
-            //{
-            //    string p = d.Attributes.GetNamedItem("nazwaPostaciFarmaceutycznej")?.Value;
-            //    string s = d.Attributes.GetNamedItem("nazwaPowszechnieStosowana")?.Value;
+            foreach (XmlNode d in drugs)
+            {
+                string p = d.Attributes.GetNamedItem("nazwaPostaciFarmaceutycznej")?.Value;
+                string s = d.Attributes.GetNamedItem("nazwaPowszechnieStosowana")?.Value;
 
-            //    if (s != null && p != null)
-            //    {
-            //        if (!preparaty.ContainsKey(s))
-            //        {
-            //            preparaty.Add(s, new HashSet<string>());
-            //        }
-            //        preparaty[s].Add(p);
-            //    }
-            //}
+                if (s != null && p != null)
+                {
+                    if (!preparaty.ContainsKey(s))
+                    {
+                        preparaty.Add(s, new HashSet<string>());
+                    }
+                    preparaty[s].Add(p);
+                }
+            }
 
-            //int wielopostaciowe = 0;
-            //foreach (var lek in preparaty)
-            //{
-            //    if (lek.Value.Count > 1)
-            //    {
-            //        wielopostaciowe++;
-            //    }
-            //}
-            //Console.WriteLine("Liczba preparatów występujących pod więcej niż jedną postacią: {0}", wielopostaciowe);
-
+            int wielopostaciowe = 0;
+            foreach (var lek in preparaty)
+            {
+                if (lek.Value.Count >= 2)
+                {
+                    wielopostaciowe++;
+                }
+            }
+            Console.WriteLine("Liczba preparatów występujących pod więcej niż jedną postacią: {0}", wielopostaciowe);
             var dane = doc.GetElementsByTagName("wytworcy");
 
             Dictionary<string, HashSet<string>> panstwaWytworcy = new Dictionary<string, HashSet<string>>();
@@ -87,6 +87,7 @@ namespace IS_Lab1_XML
                     Console.WriteLine($" - {wytworca}");
                 }
             }
+            return preparaty;
         }
     }
 }

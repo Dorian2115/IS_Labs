@@ -9,36 +9,8 @@ namespace IS_Lab1_XML
 {
     internal class XMLReadWithSAXApproach
     {
-        public static void Read(string xmlpath)
+        public static Dictionary<string, HashSet<string>> Read(string xmlpath)
         {
-            //XmlReaderSettings settings = new XmlReaderSettings();
-            //settings.IgnoreComments = true;
-            //settings.IgnoreProcessingInstructions = true;
-            //settings.IgnoreWhitespace = true;
-
-            //XmlReader reader = XmlReader.Create(xmlpath, settings);
-
-            //int count = 0;
-            //string postac = "";
-            //string sc = "";
-
-            //reader.MoveToContent();
-
-            //while (reader.Read())
-            //{
-            //    if(reader.NodeType == XmlNodeType.Element && reader.Name == "produktLeczniczy")
-            //    {
-            //        postac = reader.GetAttribute("nazwaPostaciFarmaceutycznej");
-            //        sc = reader.GetAttribute("nazwaPowszechnieStosowana");
-            //        if (postac == "Krem" && sc == "Mometasoni furoas")
-            //        {
-            //            count++;
-            //        }
-            //    }
-            //}
-            //Console.WriteLine("Liczba produktów leczniczych w postaci kremu, których jedyną substancją czynną jest Mometasoni furoas {0} ", count);
-
-            // --- ZADANIE 1.3.2 ---
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.IgnoreComments = true;
             settings.IgnoreProcessingInstructions = true;
@@ -46,41 +18,72 @@ namespace IS_Lab1_XML
 
             XmlReader reader = XmlReader.Create(xmlpath, settings);
 
+            int count = 0;
+            string postac = "";
+            string sc = "";
+
             reader.MoveToContent();
-
-            Dictionary<string, HashSet<string>> preparaty = new Dictionary<string, HashSet<string>>();
-
-            //while (reader.Read())
-            //{
-            //    string p = reader.GetAttribute("nazwaPostaciFarmaceutycznej");
-            //    string s = reader.GetAttribute("nazwaPowszechnieStosowana");
-
-            //    if (s != null && p != null)
-            //    {
-            //        if (!preparaty.ContainsKey(s))
-            //        {
-            //            preparaty.Add(s, new HashSet<string>());
-            //        }
-            //        preparaty[s].Add(p);
-            //    }
-            //}
-
-            //int wielopostaciowe = 0;
-            //foreach (var lek in preparaty)
-            //{
-            //    if (lek.Value.Count > 1)
-            //    {
-            //        wielopostaciowe++;
-            //    }
-            //}
-            //Console.WriteLine("Liczba preparatów występujących pod więcej niż jedną postacią: {0}", wielopostaciowe);
-            
-            Dictionary<string, HashSet<string>> panstwaWytworcy = new Dictionary<string, HashSet<string>>();
 
             while (reader.Read())
             {
-                string kraj = reader.GetAttribute("krajWytworcyImportera");
-                string nazwa = reader.GetAttribute("nazwaWytworcyImportera");
+                if (reader.NodeType == XmlNodeType.Element && reader.Name == "produktLeczniczy")
+                {
+                    postac = reader.GetAttribute("nazwaPostaciFarmaceutycznej");
+                    sc = reader.GetAttribute("nazwaPowszechnieStosowana");
+                    if (postac == "Krem" && sc == "Mometasoni furoas")
+                    {
+                        count++;
+                    }
+                }
+            }
+            Console.WriteLine("Liczba produktów leczniczych w postaci kremu, których jedyną substancją czynną jest Mometasoni furoas {0} ", count);
+
+            // --- ZADANIE 1.3.2 ---
+            //XmlReaderSettings settings = new XmlReaderSettings();
+            //settings.IgnoreComments = true;
+            //settings.IgnoreProcessingInstructions = true;
+            //settings.IgnoreWhitespace = true;
+
+            XmlReader reader2 = XmlReader.Create(xmlpath, settings);
+
+            reader2.MoveToContent();
+
+            Dictionary<string, HashSet<string>> preparaty = new Dictionary<string, HashSet<string>>();
+
+            while (reader2.Read())
+            {
+                string p = reader2.GetAttribute("nazwaPostaciFarmaceutycznej");
+                string s = reader2.GetAttribute("nazwaPowszechnieStosowana");
+
+                if (s != null && p != null)
+                {
+                    if (!preparaty.ContainsKey(s))
+                    {
+                        preparaty.Add(s, new HashSet<string>());
+                    }
+                    preparaty[s].Add(p);
+                }
+            }
+
+            int wielopostaciowe = 0;
+            foreach (var lek in preparaty)
+            {
+                if (lek.Value.Count >= 2)
+                {
+                    wielopostaciowe++;
+                }
+            }
+            Console.WriteLine("Liczba preparatów występujących pod więcej niż jedną postacią: {0}", wielopostaciowe);
+
+            XmlReader reader3 = XmlReader.Create(xmlpath, settings);
+            reader3.MoveToContent();
+
+            Dictionary<string, HashSet<string>> panstwaWytworcy = new Dictionary<string, HashSet<string>>();
+
+            while (reader3.Read())
+            {
+                string kraj = reader3.GetAttribute("krajWytworcyImportera");
+                string nazwa = reader3.GetAttribute("nazwaWytworcyImportera");
 
                 if (!string.IsNullOrEmpty(kraj) && !string.IsNullOrEmpty(nazwa))
                 {
@@ -104,6 +107,7 @@ namespace IS_Lab1_XML
                 }
             }
 
+            return preparaty;
         }
     }
 }
