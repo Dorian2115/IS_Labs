@@ -55,7 +55,7 @@ namespace IS_Lab1_XML
                 string p = reader2.GetAttribute("nazwaPostaciFarmaceutycznej");
                 string s = reader2.GetAttribute("nazwaPowszechnieStosowana");
 
-                if (s != null && p != null)
+                if (!string.IsNullOrEmpty(s) && !string.IsNullOrEmpty(p))
                 {
                     if (!preparaty.ContainsKey(s))
                     {

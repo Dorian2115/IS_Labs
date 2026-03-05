@@ -38,7 +38,7 @@ namespace IS_Lab1_XML
                 string p = d.Attributes.GetNamedItem("nazwaPostaciFarmaceutycznej")?.Value;
                 string s = d.Attributes.GetNamedItem("nazwaPowszechnieStosowana")?.Value;
 
-                if (s != null && p != null)
+                if (!string.IsNullOrEmpty(s) && !string.IsNullOrEmpty(p))
                 {
                     if (!preparaty.ContainsKey(s))
                     {
